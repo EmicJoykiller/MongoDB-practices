@@ -379,3 +379,28 @@ db.FoodTrolley.find(
   }
 );
 
+//exist and null
+//find all the food items that contain inventory 
+use("HarryPotterDB");
+db.FoodTrolley.find(
+  {
+    "Inventory": {"$exists": true}
+  },
+  {
+    "FoodItem":1,
+    "_id":0
+  }
+);
+
+//find all the food items that does not contain inventory 
+
+use("HarryPotterDB");
+db.FoodTrolley.find(
+  {
+    "Inventory": null
+  },
+  {
+    "FoodItem":1,
+    "_id":0
+  }
+);
