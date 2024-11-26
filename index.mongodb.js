@@ -353,3 +353,29 @@ db.FoodTrolley.find(
   }
 );
 
+// find all the food items contaning 10,20,14 items
+
+use("HarryPotterDB");
+db.FoodTrolley.find(
+  {
+    "Inventory": {"$in":[10,20,14]}
+  },
+  {
+    "FoodItem":1,
+    "_id":0
+  }
+);
+
+//find all the food items not containing 14 items
+
+use("HarryPotterDB");
+db.FoodTrolley.find(
+  {
+    "Inventory": {"$nin": [14]}
+  },
+  {
+    "FoodItem":1,
+    "_id":0
+  }
+);
+
