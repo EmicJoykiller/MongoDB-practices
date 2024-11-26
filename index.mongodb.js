@@ -406,3 +406,21 @@ db.FoodTrolley.find(
     "_id":0
   }
 );
+
+//list all the food conating frog where inventory is between 20 and 60
+
+use("HarryPotterDB");
+db.FoodTrolley.find(
+  {
+    "$and":[
+      {"Inventory": {"$gt":20}},
+      {"Inventory":{"$lt": 60}},
+      {"FoodItem": /frog/i}
+    ]
+  },
+  {
+    "FoodItem":1,
+    "Inventory":1,
+    "_id":0
+  }
+);
