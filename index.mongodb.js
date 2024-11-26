@@ -388,6 +388,7 @@ db.FoodTrolley.find(
   },
   {
     "FoodItem":1,
+    "Inventory":1,
     "_id":0
   }
 );
@@ -401,6 +402,7 @@ db.FoodTrolley.find(
   },
   {
     "FoodItem":1,
+    "Inventory":1,
     "_id":0
   }
 );
