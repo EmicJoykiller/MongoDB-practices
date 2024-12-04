@@ -424,3 +424,262 @@ db.FoodTrolley.find(
     "_id":0
   }
 );
+
+
+/* Q1. Find all the Documents containing 'duplex' in the room name. 
+Display only the room_name and the Price of the room.
+Display the prices in descending order. */
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+use('sample_airbnb');
+db.listingsAndReviews.aggregate([
+                                {"$match": {"name": /duplex/i} },
+                                {"$project": {"name":1, "price": 1}},
+                                {"$sort": {"price": -1}}
+                                ])
+
+
+
+
+
+
+
+
+
+
+/* Q2. How many listings contain the word 'duplex' in the room name? */
+
+
+Select countryname, count(countryname) as num_emps_per_country
+from emp 
+group by countryname;
+
+
+use('sample_airbnb');
+db.listingsAndReviews.aggregate([
+                                {"$match": {"name": /duplex/i} },
+                                {"$group": {_id:"name", 
+                                            count_of_duplex_rooms: {"$sum":1 } 
+                                           }
+                                },  /* contrast the use of field-path: '_id:"name" vs '_id:"$name"'' */
+                                {"$project": {"name":1, "count_of_duplex_rooms": 1}}
+                                 ])
+
+
+
+
+
+
+select avg(salary)
+from emp
+where ....;
+                   
+
+
+/* Q3. For all the Documents containing 'duplex' in the room name, find the Avg price of such Duplex
+listings. */
+use('sample_airbnb');
+db.listingsAndReviews.aggregate([
+                                {"$match": {"name": /duplex/i} },
+                                {"$group": {_id: "name", 
+                                            calc_avgPrice: {"$avg": "$price"} 
+                                           } 
+                                },
+                                {"$project": {"name":1, "calc_avgPrice": 1}}
+                                ])
+
+                          
+
+
+/*
+Q4. How many listings have the 'property_type' of 'House', and include “First aid kit" 
+as one of the amenities?
+*/
+use('sample_airbnb');
+db.listingsAndReviews.aggregate([
+                                {"$match": {"$and": [ {"property_type": /house/i},   /* array */
+                                                      {"amenities": /first aid kit/i}
+                                                    ]
+                                            } 
+                                },
+                                {"$group": {_id: "property_type", 
+                                            count_of_such_listings:{"$sum": 1}            /* try: {"dollarcount": {} } */ 
+                                            }
+                                }
+                                ])
+
+
+
+
+/* Q5. Display all the listings that have “Free parking on premises”, “Air conditioning”, and “Wifi” 
+as part of their amenities, and have at least 2 bedrooms */
+
+/*use('sample_airbnb');
+db.listingsAndReviews.find({"$and": [   
+                                    {"amenities": {"$and": [ /Free parking on premises/i,
+                                                            /Air conditioning/i,
+                                                            /wifi/i
+                                                            ]
+                                                  } 
+                                    },
+                                    {"beds": {"$gte": 2} }
+                                    ]
+                           },
+                           {_id: 0, name: 1, amenities:1, beds: 1 }
+                           )
+*/
+
+use('sample_airbnb');
+db.listingsAndReviews.find({"$and": [   
+                                    {"amenities": /Free parking on premises/i},
+                                    {"amenities":  /Air conditioning/i},
+                                    {"amenities":  /wifi/i},
+                                    {"bedrooms": {"$gte": 2}}
+                                    ]
+                            } ,
+                            {_id: 0, name: 1, amenities:1, bedrooms: 1 }
+                         )
+
+
+/* Q6. Display the names and the street_address of all listings 
+where the first amenity is “Internet” */
+use('sample_airbnb');
+db.listingsAndReviews.find({"amenities.0": /internet/i },
+                           {"_id":0, "name": 1, "address.street":1 }
+                           )
+
+
+
+
+
+
+
+/*Q7. Display the name and accomodation capacity, of the 5 listings with the biggest accomodation.
+ */
+use('sample_airbnb');
+db.listingsAndReviews.aggregate({"$sort": {"accommodates": -1}},                         /*aggregate = used for pipelining in general, not just for grouping by*/
+                                {"$limit":5},
+                                {"$project": {"_id":0, "name": 1, "accommodates":1}}
+                                );
+
+
+
+
+
+
+
+                                
+/* Q8. Display each distinct value of property_type, sorted in ascending alphabetical order.  */
+use('sample_airbnb');
+
+
+
+
+db.listingsAndReviews.aggregate([
+                                {"$group": {_id: "$property_type"}},
+                                {"$sort": {_id: 1}}
+                                ] );
+
+
+/* Q9.  How many listings exist, of type 'Bungalow'? */ 
+
+use('sample_airbnb');
+db.listingsAndReviews.aggregate(
+                                [
+                                {"$match": {"property_type": /bungalow/i}},
+                                {"$group": {_id: "property_type", 
+                                            count_of_bungalow_listings: {"$count": {}}
+                                            }}
+                                ]
+                                );  
+                                
+
+/* Q10. Which property_type has the highest avg 'review_scores_rating'?  */
+
+
+
+
+
+
+use('sample_airbnb');
+db.listingsAndReviews.aggregate(
+                                [
+                                {"$group": {_id: "$property_type",
+                                            avg_rating_for_this_proptype: {"$avg": "$review_scores.review_scores_rating"}
+                                            }
+                                },
+                                {"$sort": {"avg_rating_for_this_proptype": -1}},
+                                {"$limit": 1}
+                                ]
+                                );
+
+
+
+
+
+
+/* 
+Q11. How many listings have 30 amenities? */  
+/* '$size' can only check for an ArraySize being an EXACT number; not a '$gt' or a '$lt' */
+
+use('sample_airbnb');
+db.listingsAndReviews.aggregate(
+                                [
+                                {"$match": {"amenities": {"$size": 30}
+                                                          
+                                           } 
+                                } ,
+                                {"$group": {_id: "amenities",
+                                            countOfSuchListings: {"$count": {}}
+                                           }  
+                                }
+                                ]
+                                );
+
+
+
+
+
+/* Q12: "$unwind": Display the author, and the date, of the most recent review for 'Ribeira Charming Duplex'  */
+
+
+
+
+
+
+use('sample_airbnb');
+db.listingsAndReviews.aggregate([
+                                {"$match": {"name": "Ribeira Charming Duplex"} },
+                                {"$unwind": "$reviews" },
+                                {"$project": {"reviews.date":1, "reviews.reviewer_name": 1}},
+                                {"$sort": {"reviews.date": -1}},
+                                {"$limit": 1}
+                                ]);
+
+
+
+
