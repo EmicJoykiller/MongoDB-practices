@@ -480,10 +480,6 @@ db.listingsAndReviews.aggregate([
 /* Q2. How many listings contain the word 'duplex' in the room name? */
 
 
-Select countryname, count(countryname) as num_emps_per_country
-from emp 
-group by countryname;
-
 
 use('sample_airbnb');
 db.listingsAndReviews.aggregate([
@@ -500,9 +496,6 @@ db.listingsAndReviews.aggregate([
 
 
 
-select avg(salary)
-from emp
-where ....;
                    
 
 
@@ -532,6 +525,7 @@ db.listingsAndReviews.aggregate([
                                                     ]
                                             } 
                                 },
+                                {"$project": {"name":1, "count_of_such_listings": 1}},
                                 {"$group": {_id: "property_type", 
                                             count_of_such_listings:{"$sum": 1}            /* try: {"dollarcount": {} } */ 
                                             }
