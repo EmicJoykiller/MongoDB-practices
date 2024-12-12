@@ -158,8 +158,9 @@ db.analytics.update(
   { url: "www.blogspot.com/blog2" },
   { $inc: { pageviews: 1 } }
 );
-db.analytics.find({ url: "www.blogspot.com/blog2" });
-
+use("blogDB");
+db.analytics.find({ "url": "www.blogspot.com/blog2" });
+db.analytics.find({"pageviews": 1031},{_id:1,pageviews:1});
 //
 
 use("blogDB");
